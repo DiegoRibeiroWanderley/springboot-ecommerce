@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -43,6 +42,5 @@ public class CategoryController {
                                                  @PathVariable Long categoryId) {
         String status = categoryService.updateCategory(category, categoryId);
         return new ResponseEntity<>(status, HttpStatus.OK);
-
     }
 }
