@@ -47,6 +47,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductResponse searchByKeyword(String keyword) {
+        List<Product> products = productRepository.findByProductNameLikeIgnoreCase('%' + keyword + '%');
+        List<ProductDTO> productsDTO = productMapper.toDTOs(products);
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productsDTO);
+        return productResponse;
+    }
+
+    @Override
     public ProductDTO addProduct(Long categoryId, Product product) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
