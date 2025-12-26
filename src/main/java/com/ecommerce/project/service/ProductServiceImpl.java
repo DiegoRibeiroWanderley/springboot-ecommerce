@@ -1,5 +1,6 @@
 package com.ecommerce.project.service;
 
+import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.mapper.ProductMapper;
 import com.ecommerce.project.model.Category;
@@ -27,13 +28,18 @@ public class ProductServiceImpl implements ProductService {
     private final FileService fileService;
 
     private final ProductMapper productMapper;
-    
+
     @Value("${project.image}")
     private String path;
 
     @Override
     public ProductResponse getAllProducts() {
         List<Product> products = productRepository.findAll();
+
+        if (products.isEmpty()) {
+            throw new APIException("No products found");
+        }
+
         List<ProductDTO> productDTOS = productMapper.toDTOs(products);
 
         ProductResponse productResponse = new ProductResponse();
@@ -47,6 +53,11 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         List<Product> products = productRepository.findByCategoryOrderByPriceAsc(category);
+
+        if (products.isEmpty()) {
+            throw new APIException("No products with this category found");
+        }
+
         List<ProductDTO> productsDTO = productMapper.toDTOs(products);
 
         ProductResponse productResponse = new ProductResponse();
@@ -57,6 +68,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse searchByKeyword(String keyword) {
         List<Product> products = productRepository.findByProductNameLikeIgnoreCase('%' + keyword + '%');
+
+        if (products.isEmpty()) {
+            throw new APIException("No products with thus keyword found");
+        }
+
         List<ProductDTO> productsDTO = productMapper.toDTOs(products);
 
         ProductResponse productResponse = new ProductResponse();
@@ -66,10 +82,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
+        Product product = productMapper.toEntity(productDTO);
+        Product productFromDB = productRepository.findByProductName(product.getProductName());
+
+        if  (productFromDB != null) {
+            throw new APIException("Product with name " + product.getProductName() + " already exists");
+        }
+
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
-
-        Product product = productMapper.toEntity(productDTO);
 
         product.setImage("default.png");
         product.setCategory(category);

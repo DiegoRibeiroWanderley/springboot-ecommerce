@@ -16,15 +16,23 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
+
+    @NotBlank(message = "Must not be blank")
+    @Size(min = 3, message = "Product name must contain at least 3 characters")
     private String productName;
+
     private String image;
+
+    @NotBlank(message = "Must not be blank")
+    @Size(min = 10, message = "Product name must contain at least 10 characters")
     private String description;
+
     private Integer quantity;
     public Double price;
     private Double discount;
     public Double specialPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 }
