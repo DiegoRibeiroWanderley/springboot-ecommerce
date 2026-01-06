@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,6 +41,12 @@ public class User {
     @Size(max = 120)
     @Column(name = "password")
     private String password;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
+    @JoinTable(name = "user_adress",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "adress_id"))
+    private List<Address> addresses = new ArrayList<>();
 
     @Setter
     @Getter
