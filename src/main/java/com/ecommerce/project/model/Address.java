@@ -3,8 +3,10 @@ package com.ecommerce.project.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +15,12 @@ import java.util.List;
 @Table(name = "addresses")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "address_id")
     private Long addressId;
 
     @NotBlank(message = "Street name must not be blank")
@@ -43,6 +47,7 @@ public class Address {
     @Size(min = 6, message = "PINCode name must be at least 6 characters")
     private String PINCode;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "addresses")
     private List<User> users = new ArrayList<>();
 }
