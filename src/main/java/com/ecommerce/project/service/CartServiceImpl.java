@@ -85,6 +85,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
 
@@ -103,6 +104,25 @@ public class CartServiceImpl implements CartService {
                 }).toList();
 
         return cartDTOS;
+    }
+
+    @Override
+    @Transactional
+    public CartDTO getCart(String email, Long cartId) {
+        Cart cart = cartRepository.findCartByEmailAndCart(email, cartId);
+
+        if (cart == null) {
+            throw new ResourceNotFoundException("Cart", "cartId", cartId);
+        }
+
+        CartDTO cartDTO = cartMapper.toDTO(cart);
+        cart.getCartItems().forEach(cartItem -> cartItem.getProduct().setQuantity(cartItem.getQuantity()));
+        List<ProductDTO> productDTOS = cart.getCartItems().stream()
+                .map(item -> productMapper.toDTO(item.getProduct()))
+                .toList();
+        cartDTO.setProducts(productDTOS);
+
+        return cartDTO;
     }
 
     private Cart createCart() {
