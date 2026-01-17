@@ -5,6 +5,8 @@ import com.ecommerce.project.payload.CartDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CartMapper {
     @Mapping(target = "products", ignore = true)
